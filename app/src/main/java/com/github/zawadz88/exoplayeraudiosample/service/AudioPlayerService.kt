@@ -31,11 +31,6 @@ import timber.log.Timber
 
 class AudioPlayerService : Service() {
 
-    companion object {
-        private const val PLAYBACK_CHANNEL_ID = "test_id"
-        private const val PLAYBACK_NOTIFICATION_ID = 6789
-    }
-
     private var player: SimpleExoPlayer? = null
 
     private var playerNotificationManager: PlayerNotificationManager? = null
@@ -66,7 +61,7 @@ class AudioPlayerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.i("Audio Service created")
+        Timber.i("Created")
 
         val player = ExoPlayerFactory.newSimpleInstance(this, DefaultTrackSelector())
         this.player = player
@@ -75,7 +70,7 @@ class AudioPlayerService : Service() {
     }
 
     override fun onDestroy() {
-        Timber.i("Audio Service destroyed")
+        Timber.i("Destroyed")
         clearPlayerNotificationManager()
         player?.release()
         player = null
@@ -87,10 +82,10 @@ class AudioPlayerService : Service() {
     override fun onBind(intent: Intent): IBinder? = LocalBinder()
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Timber.i("Audio Service starting command with Intent: $intent")
+        Timber.i("Starting command with Intent: $intent")
 
-        if (intent.hasExtra("shouldPlay")) {
-            val shouldPlay = intent.getBooleanExtra("shouldPlay", true)
+        if (intent.hasExtra(INTENT_KEY_SHOULD_PLAY)) {
+            val shouldPlay = intent.getBooleanExtra(INTENT_KEY_SHOULD_PLAY, true)
             player!!.playWhenReady = shouldPlay
         }
 
@@ -163,5 +158,12 @@ class AudioPlayerService : Service() {
 
         val boundPlayer: ExoPlayer
             get() = checkNotNull(player) { "Expected player to be not null" }
+    }
+
+    companion object {
+        const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
+
+        private const val PLAYBACK_CHANNEL_ID = "test_id"
+        private const val PLAYBACK_NOTIFICATION_ID = 6789
     }
 }
