@@ -28,7 +28,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="@android:color/black"
+        android:tint="@color/seek_icon_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/togglePlaybackButton"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,35 +42,35 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="@android:color/black"
+        android:tint="@color/seek_icon_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/togglePlaybackButton"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/exo_controls_previous" />
 
     <TextView
-        style="@style/TextAppearance.MaterialComponents.Headline5"
         android:id="@+id/songTitleTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        tools:text="Lullaby"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Lullaby" />
 
     <TextView
-        style="@style/TextAppearance.MaterialComponents.Subtitle2"
         android:id="@+id/artistTextView"
+        style="@style/TextAppearance.MaterialComponents.Subtitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        tools:text="Nickelback"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/songTitleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/songTitleTextView"
+        tools:text="Nickelback" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

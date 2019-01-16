@@ -7,10 +7,13 @@ import timber.log.Timber
 
 class AudioPlayerServiceConnector(private val context: Context) {
 
+    private val serviceIntent: Intent
+        get() = Intent(context, AudioPlayerService::class.java)
+
     private var serviceConnection: AudioPlayerServiceConnection? = null
 
-    fun connect(updatePlaybackStateCallback: (playWhenReady: Boolean) -> Unit) {
-        serviceConnection = AudioPlayerServiceConnection(updatePlaybackStateCallback)
+    fun connect(stateListener: AudioPlayerStateListener) {
+        serviceConnection = AudioPlayerServiceConnection(stateListener)
 
         val intent = Intent(context, AudioPlayerService::class.java)
         Util.startForegroundService(context, intent)
@@ -28,8 +31,22 @@ class AudioPlayerServiceConnector(private val context: Context) {
     }
 
     fun changePlayback(shouldPlay: Boolean) {
-        val intent = Intent(context, AudioPlayerService::class.java).apply {
+        val intent = serviceIntent.apply {
             putExtra(AudioPlayerService.INTENT_KEY_SHOULD_PLAY, shouldPlay)
+        }
+        context.startService(intent)
+    }
+
+    fun next() {
+        val intent = serviceIntent.apply {
+            putExtra(AudioPlayerService.INTENT_KEY_NEXT, true)
+        }
+        context.startService(intent)
+    }
+
+    fun previous() {
+        val intent = serviceIntent.apply {
+            putExtra(AudioPlayerService.INTENT_KEY_PREVIOUS, true)
         }
         context.startService(intent)
     }

@@ -3,19 +3,28 @@ package com.github.zawadz88.exoplayeraudiosample.service
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import timber.log.Timber
 
 class AudioPlayerServiceConnection(
-    private val updatePlaybackStateCallback: (playWhenReady: Boolean) -> Unit
+    private val stateListener: AudioPlayerStateListener
 ) : ServiceConnection {
 
-    private var audioService: AudioPlayerService.LocalBinder? = null
+    private var serviceBinder: AudioPlayerService.LocalBinder? = null
 
     private val playerEventListener = object : Player.EventListener {
+
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             Timber.i("onPlayerStateChanged -> playWhenReady: $playWhenReady, playbackState: $playbackState")
-            updatePlaybackStateCallback(playWhenReady)
+            stateListener.onPlaybackStateUpdated(playWhenReady)
+        }
+
+        override fun onPositionDiscontinuity(reason: Int) {
+            Timber.i("onPositionDiscontinuity -> reason: $reason")
+            serviceBinder?.boundPlayer?.let {
+                updateCurrentWindowCallbackWithPlayer(it)
+            }
         }
     }
 
@@ -26,16 +35,22 @@ class AudioPlayerServiceConnection(
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         if (service !is AudioPlayerService.LocalBinder) return
 
-        audioService = service
         Timber.i("Connected: $name")
-        updatePlaybackStateCallback(service.boundPlayer.playWhenReady)
-        service.boundPlayer.addListener(playerEventListener)
+        serviceBinder = service
+        val boundPlayer = service.boundPlayer
+        stateListener.onPlaybackStateUpdated(boundPlayer.playWhenReady)
+        updateCurrentWindowCallbackWithPlayer(boundPlayer)
+        boundPlayer.addListener(playerEventListener)
     }
 
     /**
      * Must be called when we call [android.app.Activity.unbindService].
      */
     fun onUnbind() {
-        audioService?.boundPlayer?.removeListener(playerEventListener)
+        serviceBinder?.boundPlayer?.removeListener(playerEventListener)
+    }
+
+    private fun updateCurrentWindowCallbackWithPlayer(boundPlayer: ExoPlayer) {
+        stateListener.onCurrentWindowUpdated(boundPlayer.hasNext())
     }
 }

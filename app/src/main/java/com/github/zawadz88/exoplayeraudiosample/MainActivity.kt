@@ -3,10 +3,10 @@ package com.github.zawadz88.exoplayeraudiosample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.github.zawadz88.exoplayeraudiosample.service.AudioPlayerServiceConnector
+import com.github.zawadz88.exoplayeraudiosample.service.AudioPlayerStateListener
 import kotlinx.android.synthetic.main.activity_main.nextButton
 import kotlinx.android.synthetic.main.activity_main.previousButton
 import kotlinx.android.synthetic.main.activity_main.togglePlaybackButton
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,12 +31,20 @@ class MainActivity : AppCompatActivity() {
         togglePlaybackButton.setOnClickListener {
             serviceConnector.changePlayback(!currentlyPlaying)
         }
-        nextButton.setOnClickListener { Timber.i("Next clicked") }
-        previousButton.setOnClickListener { Timber.i("Previous clicked") }
+        nextButton.setOnClickListener { serviceConnector.next() }
+        previousButton.setOnClickListener { serviceConnector.previous() }
     }
 
     private fun startPlayback() {
-        serviceConnector.connect(::updatePlaybackState)
+        serviceConnector.connect(object : AudioPlayerStateListener {
+            override fun onPlaybackStateUpdated(playWhenReady: Boolean) = updatePlaybackState(playWhenReady)
+
+            override fun onCurrentWindowUpdated(hasNext: Boolean) = updateCurrentWindow(hasNext = hasNext)
+        })
+    }
+
+    private fun updateCurrentWindow(hasNext: Boolean) {
+        nextButton.isEnabled = hasNext
     }
 
     private fun updatePlaybackState(playWhenReady: Boolean) {

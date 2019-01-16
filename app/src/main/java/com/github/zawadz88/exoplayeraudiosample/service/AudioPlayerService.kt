@@ -12,6 +12,7 @@ import com.github.zawadz88.exoplayeraudiosample.MainActivity
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.Samples
 import com.github.zawadz88.exoplayeraudiosample.Samples.SAMPLES
+import com.github.zawadz88.exoplayeraudiosample.extension.printIntentExtras
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -98,16 +99,35 @@ class AudioPlayerService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Timber.i("Starting command with Intent: $intent")
+        intent.printIntentExtras()
 
-        if (intent.hasExtra(INTENT_KEY_SHOULD_PLAY)) {
-            val shouldPlay = intent.getBooleanExtra(INTENT_KEY_SHOULD_PLAY, true)
-            player!!.playWhenReady = shouldPlay
+        when {
+            intent.hasExtra(INTENT_KEY_SHOULD_PLAY) -> {
+                val shouldPlay = intent.getBooleanExtra(INTENT_KEY_SHOULD_PLAY, true)
+                player!!.playWhenReady = shouldPlay
+            }
+            intent.getBooleanExtra(INTENT_KEY_NEXT, false) -> goToNext()
+            intent.getBooleanExtra(INTENT_KEY_PREVIOUS, false) -> goToPreviousOrBeginning()
         }
 
         playerNotificationManager ?: preparePlayerNotificationManager()
 
         // https://github.com/google/ExoPlayer/issues/4256
         return Service.START_STICKY
+    }
+
+    private fun goToPreviousOrBeginning() {
+        player?.run {
+            if (hasPrevious()) {
+                previous()
+            } else {
+                seekToDefaultPosition()
+            }
+        }
+    }
+
+    private fun goToNext() {
+        player?.next()
     }
 
     private fun preparePlayerNotificationManager() {
@@ -168,6 +188,8 @@ class AudioPlayerService : Service() {
 
     companion object {
         const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
+        const val INTENT_KEY_NEXT = "next"
+        const val INTENT_KEY_PREVIOUS = "previous"
 
         private const val PLAYBACK_CHANNEL_ID = "test_id"
         private const val PLAYBACK_NOTIFICATION_ID = 6789
