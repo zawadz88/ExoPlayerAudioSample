@@ -59,6 +59,21 @@ class AudioPlayerService : Service() {
         }
     }
 
+    private val notificationListener = object : NotificationListener {
+
+        override fun onNotificationStarted(notificationId: Int, notification: Notification) {
+            Timber.i("Notification started: $notification")
+            currentlyDisplayedNotification = notification
+            startForeground(notificationId, notification)
+        }
+
+        override fun onNotificationCancelled(notificationId: Int) {
+            Timber.i("Notification cancelled")
+            stopSelf()
+            clearPlayerNotificationManager()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         Timber.i("Created")
@@ -102,32 +117,23 @@ class AudioPlayerService : Service() {
             PLAYBACK_CHANNEL_ID,
             R.string.channel_name,
             PLAYBACK_NOTIFICATION_ID,
-            object : MediaDescriptionAdapter {
-                override fun getCurrentContentTitle(player: Player): String = SAMPLES[player.currentWindowIndex].title
+            createMediaDescriptionAdapter(context)
+        ).apply {
+            setNotificationListener(notificationListener)
+            setPlayer(player)
+            setStopAction(null)
+        }
+    }
 
-                override fun createCurrentContentIntent(player: Player): PendingIntent? =
-                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+    private fun createMediaDescriptionAdapter(context: Context): MediaDescriptionAdapter = object : MediaDescriptionAdapter {
+        override fun getCurrentContentTitle(player: Player): String = SAMPLES[player.currentWindowIndex].title
 
-                override fun getCurrentContentText(player: Player): String? = SAMPLES[player.currentWindowIndex].description
+        override fun createCurrentContentIntent(player: Player): PendingIntent? =
+            PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
 
-                override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? = Samples.getBitmap(context, SAMPLES[player.currentWindowIndex].bitmapResource)
-            }
-        )
-        playerNotificationManager!!.setNotificationListener(object : NotificationListener {
+        override fun getCurrentContentText(player: Player): String? = SAMPLES[player.currentWindowIndex].description
 
-            override fun onNotificationStarted(notificationId: Int, notification: Notification) {
-                Timber.i("Notification started: $notification")
-                currentlyDisplayedNotification = notification
-                startForeground(notificationId, notification)
-            }
-
-            override fun onNotificationCancelled(notificationId: Int) {
-                Timber.i("Notification cancelled")
-                stopSelf()
-                clearPlayerNotificationManager()
-            }
-        })
-        playerNotificationManager!!.setPlayer(player)
+        override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? = Samples.getBitmap(context, SAMPLES[player.currentWindowIndex].bitmapResource)
     }
 
     private fun clearPlayerNotificationManager() {
