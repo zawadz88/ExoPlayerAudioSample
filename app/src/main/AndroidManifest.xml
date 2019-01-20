@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name="com.github.zawadz88.exoplayeraudiosample.SampleApplication"
+        android:name="com.github.zawadz88.exoplayeraudiosample.internal.application.AndroidApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.github.zawadz88.exoplayeraudiosample.MainActivity"
+            android:name="com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

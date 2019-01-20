@@ -8,7 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Binder
 import android.os.IBinder
-import com.github.zawadz88.exoplayeraudiosample.MainActivity
+import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.Samples
 import com.github.zawadz88.exoplayeraudiosample.Samples.SAMPLES
@@ -173,6 +173,7 @@ class AudioPlayerService : Service() {
     private fun createMediaSource(): ConcatenatingMediaSource {
         val dataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, getString(R.string.app_name)))
         val concatenatingMediaSource = ConcatenatingMediaSource()
+        // TODO: load data from some real-life source
         for (sample in SAMPLES) {
             val mediaSource = ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(sample.uri)
             concatenatingMediaSource.addMediaSource(mediaSource)

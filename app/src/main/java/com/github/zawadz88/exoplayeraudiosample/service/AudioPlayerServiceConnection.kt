@@ -7,9 +7,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import timber.log.Timber
 
-class AudioPlayerServiceConnection(
-    private val stateListener: AudioPlayerStateListener
-) : ServiceConnection {
+class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateListener) : ServiceConnection {
 
     private var serviceBinder: AudioPlayerService.LocalBinder? = null
 
