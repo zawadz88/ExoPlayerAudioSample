@@ -8,11 +8,12 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Binder
 import android.os.IBinder
-import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.Samples
 import com.github.zawadz88.exoplayeraudiosample.Samples.SAMPLES
 import com.github.zawadz88.exoplayeraudiosample.extension.printIntentExtras
+import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
+import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -32,21 +33,47 @@ import timber.log.Timber
 
 class AudioPlayerService : Service() {
 
+    companion object {
+        const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
+        const val INTENT_KEY_NEXT = "next"
+        const val INTENT_KEY_PREVIOUS = "previous"
+
+        private const val PLAYBACK_CHANNEL_ID = "playback_channel_id"
+        private const val PLAYBACK_NOTIFICATION_ID = 6789
+    }
+
     private var player: SimpleExoPlayer? = null
 
     private var playerNotificationManager: PlayerNotificationManager? = null
 
     private var currentlyDisplayedNotification: Notification? = null
 
+    private var playerPrepared: Boolean = false
+
     private val playerEventListener = object : Player.EventListener {
+
+        override fun onPlayerError(error: ExoPlaybackException) {
+            Timber.w(error, "onPlayerError type: ${error.type}")
+        }
+
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            Timber.i("onPlayerStateChanged -> playWhenReady: $playWhenReady, playbackState: $playbackState")
+            Timber.d("onPlayerStateChanged -> playWhenReady: $playWhenReady, playbackState: $playbackState, playbackError: ${player?.playbackError}")
+
+            if (player?.playbackError != null) {
+                Timber.d("Error detected - stopping service and notification")
+                stopForeground(true)
+                clearPlayerNotificationManager()
+                playerPrepared = false
+                return
+            }
+
             if (shouldPreparePlayerAgain(playWhenReady, playbackState)) {
-                preparePlayerAndPlay()
+                Timber.d("Preparing player again")
+                preparePlayer()
             }
 
             when {
-                !playWhenReady -> {
+                !playWhenReady && currentlyDisplayedNotification != null -> {
                     Timber.d("Stopping foreground Service")
                     stopForeground(false)
                     playerNotificationManager?.setOngoing(false)
@@ -70,8 +97,9 @@ class AudioPlayerService : Service() {
 
         override fun onNotificationCancelled(notificationId: Int) {
             Timber.i("Notification cancelled")
-            stopSelf()
+            currentlyDisplayedNotification = null
             clearPlayerNotificationManager()
+            stopSelf()
         }
     }
 
@@ -79,16 +107,18 @@ class AudioPlayerService : Service() {
         super.onCreate()
         Timber.i("Created")
 
-        val player = ExoPlayerFactory.newSimpleInstance(this, DefaultTrackSelector())
-        this.player = player
-        preparePlayerAndPlay()
-        player.addListener(playerEventListener)
+        this.player = ExoPlayerFactory.newSimpleInstance(this, DefaultTrackSelector()).apply {
+            addListener(playerEventListener)
+        }
     }
 
     override fun onDestroy() {
         Timber.i("Destroyed")
         clearPlayerNotificationManager()
-        player?.release()
+        player?.run {
+            removeListener(playerEventListener)
+            release()
+        }
         player = null
         currentlyDisplayedNotification = null
 
@@ -105,15 +135,16 @@ class AudioPlayerService : Service() {
             intent.hasExtra(INTENT_KEY_SHOULD_PLAY) -> {
                 val shouldPlay = intent.getBooleanExtra(INTENT_KEY_SHOULD_PLAY, true)
                 player!!.playWhenReady = shouldPlay
+
+                if (!playerPrepared) preparePlayer()
+                playerNotificationManager ?: preparePlayerNotificationManager()
             }
             intent.getBooleanExtra(INTENT_KEY_NEXT, false) -> goToNext()
             intent.getBooleanExtra(INTENT_KEY_PREVIOUS, false) -> goToPreviousOrBeginning()
         }
 
-        playerNotificationManager ?: preparePlayerNotificationManager()
-
         // https://github.com/google/ExoPlayer/issues/4256
-        return Service.START_STICKY
+        return Service.START_NOT_STICKY
     }
 
     private fun goToPreviousOrBeginning() {
@@ -131,8 +162,9 @@ class AudioPlayerService : Service() {
     }
 
     private fun preparePlayerNotificationManager() {
+        Timber.d("Preparing PlayerNotificationManager")
         val context: Context = this
-        playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
+        playerNotificationManager = createWithNotificationChannel(
             context,
             PLAYBACK_CHANNEL_ID,
             R.string.channel_name,
@@ -141,7 +173,8 @@ class AudioPlayerService : Service() {
         ).apply {
             setNotificationListener(notificationListener)
             setPlayer(player)
-            setStopAction(null)
+            setRewindIncrementMs(0L)
+            setFastForwardIncrementMs(0L)
         }
     }
 
@@ -163,11 +196,9 @@ class AudioPlayerService : Service() {
 
     private fun shouldPreparePlayerAgain(playWhenReady: Boolean, playbackState: Int) = playWhenReady && (playbackState == STATE_IDLE || playbackState == STATE_ENDED)
 
-    private fun preparePlayerAndPlay() {
-        player?.run {
-            prepare(createMediaSource())
-            playWhenReady = true
-        }
+    private fun preparePlayer() {
+        playerPrepared = true
+        player?.prepare(createMediaSource())
     }
 
     private fun createMediaSource(): ConcatenatingMediaSource {
@@ -185,14 +216,5 @@ class AudioPlayerService : Service() {
 
         val boundPlayer: ExoPlayer
             get() = checkNotNull(player) { "Expected player to be not null" }
-    }
-
-    companion object {
-        const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
-        const val INTENT_KEY_NEXT = "next"
-        const val INTENT_KEY_PREVIOUS = "previous"
-
-        private const val PLAYBACK_CHANNEL_ID = "test_id"
-        private const val PLAYBACK_NOTIFICATION_ID = 6789
     }
 }

@@ -15,7 +15,8 @@ class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateLi
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             Timber.i("onPlayerStateChanged -> playWhenReady: $playWhenReady, playbackState: $playbackState")
-            stateListener.onPlaybackStateUpdated(playWhenReady)
+            stateListener.onPlaybackStateUpdated(playWhenReady, serviceBinder?.boundPlayer?.playbackError != null)
+            serviceBinder?.boundPlayer?.let { updateCurrentWindowCallbackWithPlayer(it) }
         }
 
         override fun onPositionDiscontinuity(reason: Int) {
@@ -36,7 +37,7 @@ class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateLi
         Timber.i("Connected: $name")
         serviceBinder = service
         val boundPlayer = service.boundPlayer
-        stateListener.onPlaybackStateUpdated(boundPlayer.playWhenReady)
+        stateListener.onPlaybackStateUpdated(boundPlayer.playWhenReady, serviceBinder?.boundPlayer?.playbackError != null)
         updateCurrentWindowCallbackWithPlayer(boundPlayer)
         boundPlayer.addListener(playerEventListener)
     }
@@ -49,6 +50,6 @@ class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateLi
     }
 
     private fun updateCurrentWindowCallbackWithPlayer(boundPlayer: ExoPlayer) {
-        stateListener.onCurrentWindowUpdated(boundPlayer.hasNext())
+        stateListener.onCurrentWindowUpdated(hasNext = boundPlayer.hasNext(), hasPrevious = boundPlayer.hasPrevious())
     }
 }

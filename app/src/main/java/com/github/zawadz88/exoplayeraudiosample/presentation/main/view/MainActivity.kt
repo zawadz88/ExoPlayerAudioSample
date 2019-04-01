@@ -18,9 +18,9 @@ class MainActivity : BaseActivity() {
 
     internal val audioPlayerStateListener = object : AudioPlayerStateListener {
 
-        override fun onPlaybackStateUpdated(playWhenReady: Boolean) = updatePlaybackState(playWhenReady)
+        override fun onPlaybackStateUpdated(playWhenReady: Boolean, hasError: Boolean) = updatePlaybackState(playWhenReady)
 
-        override fun onCurrentWindowUpdated(hasNext: Boolean) = updateCurrentWindow(hasNext = hasNext)
+        override fun onCurrentWindowUpdated(hasNext: Boolean, hasPrevious: Boolean) = updateCurrentWindow(hasNext = hasNext, hasPrevious = hasPrevious)
     }
 
     @Inject
@@ -35,21 +35,20 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         initializeViews()
-
-        viewModel = ViewModelProvider(this, viewModelFactory).get()
-        viewModel.loadContent()
+        viewModel = ViewModelProvider(this, viewModelFactory).get<MainViewModel>().apply {
+            loadContent()
+        }
     }
 
     private fun initializeViews() {
-        togglePlaybackButton.setOnClickListener {
-            audioManager.changePlayback(!currentlyPlaying)
-        }
+        togglePlaybackButton.setOnClickListener { audioManager.changePlayback(!currentlyPlaying) }
         nextButton.setOnClickListener { audioManager.next() }
         previousButton.setOnClickListener { audioManager.previous() }
     }
 
-    private fun updateCurrentWindow(hasNext: Boolean) {
+    private fun updateCurrentWindow(hasNext: Boolean, hasPrevious: Boolean) {
         nextButton.isEnabled = hasNext
+        previousButton.isEnabled = hasPrevious
     }
 
     private fun updatePlaybackState(playWhenReady: Boolean) {

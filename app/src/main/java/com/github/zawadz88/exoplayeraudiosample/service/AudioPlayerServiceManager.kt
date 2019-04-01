@@ -1,15 +1,15 @@
 package com.github.zawadz88.exoplayeraudiosample.service
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
 import com.google.android.exoplayer2.util.Util
 import timber.log.Timber
 
 class AudioPlayerServiceManager(
-    private val activity: AppCompatActivity,
+    private val activity: MainActivity,
     private val audioPlayerServiceConnectionFactory: AudioPlayerServiceConnectionFactory,
     private val audioPlayerServiceIntentFactory: AudioPlayerServiceIntentFactory,
     stateListener: AudioPlayerStateListener
@@ -35,24 +35,23 @@ class AudioPlayerServiceManager(
 
     fun changePlayback(shouldPlay: Boolean) {
         val intent = audioPlayerServiceIntentFactory.createChangePlaybackIntent(shouldPlay)
-        activity.startService(intent)
+        Util.startForegroundService(activity, intent)
     }
 
     fun next() {
         val intent = audioPlayerServiceIntentFactory.createPlayNextIntent()
-        activity.startService(intent)
+        Util.startForegroundService(activity, intent)
     }
 
     fun previous() {
         val intent = audioPlayerServiceIntentFactory.createPlayPreviousIntent()
-        activity.startService(intent)
+        Util.startForegroundService(activity, intent)
     }
 
     private fun connect(stateListener: AudioPlayerStateListener) {
         Timber.d("Connecting to AudioPlayerServiceConnection")
         serviceConnection = audioPlayerServiceConnectionFactory.createConnection(stateListener).also {
             val intent = audioPlayerServiceIntentFactory.createBaseIntent()
-            Util.startForegroundService(activity, intent)
             activity.bindService(intent, it, Context.BIND_AUTO_CREATE)
         }
     }
