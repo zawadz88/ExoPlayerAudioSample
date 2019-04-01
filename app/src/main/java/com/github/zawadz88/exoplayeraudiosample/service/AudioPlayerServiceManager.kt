@@ -1,15 +1,15 @@
 package com.github.zawadz88.exoplayeraudiosample.service
 
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
 import com.google.android.exoplayer2.util.Util
 import timber.log.Timber
 
 class AudioPlayerServiceManager(
-    private val activity: MainActivity,
+    private val activity: ComponentActivity,
     private val audioPlayerServiceConnectionFactory: AudioPlayerServiceConnectionFactory,
     private val audioPlayerServiceIntentFactory: AudioPlayerServiceIntentFactory,
     stateListener: AudioPlayerStateListener
