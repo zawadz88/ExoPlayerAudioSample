@@ -20,5 +20,4 @@ constructor() : ViewModel() {
     fun loadContent() {
         Timber.d("Loading content")
     }
-
 }

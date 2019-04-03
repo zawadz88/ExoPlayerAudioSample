@@ -1,9 +1,9 @@
-package com.github.zawadz88.exoplayeraudiosample.extension
+package com.github.zawadz88.audioservice.internal.extension
 
 import android.content.Intent
 import timber.log.Timber
 
-fun Intent.printIntentExtras() {
+internal fun Intent.printIntentExtras() {
     val extrasBundle = this.extras
     val sb = StringBuilder()
     if (extrasBundle != null) {

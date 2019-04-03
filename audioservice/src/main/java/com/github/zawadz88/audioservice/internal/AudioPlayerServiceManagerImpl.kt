@@ -1,19 +1,23 @@
-package com.github.zawadz88.exoplayeraudiosample.service
+package com.github.zawadz88.audioservice.internal
 
 import android.content.Context
-import androidx.activity.ComponentActivity
+import androidx.core.app.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.github.zawadz88.audioservice.AudioPlayerServiceManager
+import com.github.zawadz88.audioservice.AudioPlayerStateListener
+import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceConnectionFactory
+import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceIntentFactory
 import com.google.android.exoplayer2.util.Util
 import timber.log.Timber
 
-class AudioPlayerServiceManager(
+internal class AudioPlayerServiceManagerImpl(
     private val activity: ComponentActivity,
     private val audioPlayerServiceConnectionFactory: AudioPlayerServiceConnectionFactory,
     private val audioPlayerServiceIntentFactory: AudioPlayerServiceIntentFactory,
     stateListener: AudioPlayerStateListener
-) {
+) : AudioPlayerServiceManager {
 
     init {
         @Suppress("unused")
@@ -33,17 +37,17 @@ class AudioPlayerServiceManager(
 
     private var serviceConnection: AudioPlayerServiceConnection? = null
 
-    fun changePlayback(shouldPlay: Boolean) {
+    override fun changePlayback(shouldPlay: Boolean) {
         val intent = audioPlayerServiceIntentFactory.createChangePlaybackIntent(shouldPlay)
         Util.startForegroundService(activity, intent)
     }
 
-    fun next() {
+    override fun next() {
         val intent = audioPlayerServiceIntentFactory.createPlayNextIntent()
         Util.startForegroundService(activity, intent)
     }
 
-    fun previous() {
+    override fun previous() {
         val intent = audioPlayerServiceIntentFactory.createPlayPreviousIntent()
         Util.startForegroundService(activity, intent)
     }

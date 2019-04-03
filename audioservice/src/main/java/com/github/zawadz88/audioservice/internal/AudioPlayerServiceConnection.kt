@@ -1,13 +1,14 @@
-package com.github.zawadz88.exoplayeraudiosample.service
+package com.github.zawadz88.audioservice.internal
 
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
+import com.github.zawadz88.audioservice.AudioPlayerStateListener
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import timber.log.Timber
 
-class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateListener) : ServiceConnection {
+internal class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateListener) : ServiceConnection {
 
     private var serviceBinder: AudioPlayerService.LocalBinder? = null
 
@@ -45,11 +46,14 @@ class AudioPlayerServiceConnection(private val stateListener: AudioPlayerStateLi
     /**
      * Must be called when we call [android.app.Activity.unbindService].
      */
-    fun onUnbind() {
+    internal fun onUnbind() {
         serviceBinder?.boundPlayer?.removeListener(playerEventListener)
     }
 
     private fun updateCurrentWindowCallbackWithPlayer(boundPlayer: ExoPlayer) {
-        stateListener.onCurrentWindowUpdated(hasNext = boundPlayer.hasNext(), hasPrevious = boundPlayer.hasPrevious())
+        stateListener.onCurrentWindowUpdated(showNextAction = boundPlayer.hasNext(), showPreviousAction = boundPlayer.shouldShowPrevious())
     }
+
+    private fun ExoPlayer.shouldShowPrevious() =
+        this.hasPrevious() || this.playbackState == Player.STATE_READY
 }

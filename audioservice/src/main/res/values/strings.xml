@@ -1,0 +1,4 @@
+<resources>
+    <string name="audio_player_service">ExoPlayerAudioService</string>
+    <string name="channel_name">Wicked audio channel</string>
+</resources>

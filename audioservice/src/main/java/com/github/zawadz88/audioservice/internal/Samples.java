@@ -1,13 +1,15 @@
-package com.github.zawadz88.exoplayeraudiosample;
+package com.github.zawadz88.audioservice.internal;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 
+import com.github.zawadz88.audioservice.R;
+
 import androidx.annotation.DrawableRes;
 
-public final class Samples {
+final class Samples {
 
     public static final class Sample {
         public final Uri uri;
@@ -31,7 +33,7 @@ public final class Samples {
         }
     }
 
-    public static final Sample[] SAMPLES = new Sample[] {
+    static final Sample[] SAMPLES = new Sample[]{
             new Sample(
                     "https://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3",
                     "audio_1",
@@ -53,7 +55,7 @@ public final class Samples {
     };
 
 
-    public static Bitmap getBitmap(Context context, @DrawableRes int bitmapResource) {
+    static Bitmap getBitmap(Context context, @DrawableRes int bitmapResource) {
         return ((BitmapDrawable) context.getResources().getDrawable(bitmapResource)).getBitmap();
     }
 

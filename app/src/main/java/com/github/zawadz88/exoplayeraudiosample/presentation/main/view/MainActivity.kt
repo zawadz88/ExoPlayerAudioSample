@@ -3,11 +3,11 @@ package com.github.zawadz88.exoplayeraudiosample.presentation.main.view
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
+import com.github.zawadz88.audioservice.AudioPlayerServiceManager
+import com.github.zawadz88.audioservice.AudioPlayerStateListener
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.internal.activity.BaseActivity
 import com.github.zawadz88.exoplayeraudiosample.presentation.main.viewmodel.MainViewModel
-import com.github.zawadz88.exoplayeraudiosample.service.AudioPlayerServiceManager
-import com.github.zawadz88.exoplayeraudiosample.service.AudioPlayerStateListener
 import kotlinx.android.synthetic.main.activity_main.nextButton
 import kotlinx.android.synthetic.main.activity_main.previousButton
 import kotlinx.android.synthetic.main.activity_main.togglePlaybackButton
@@ -20,7 +20,7 @@ class MainActivity : BaseActivity() {
 
         override fun onPlaybackStateUpdated(playWhenReady: Boolean, hasError: Boolean) = updatePlaybackState(playWhenReady)
 
-        override fun onCurrentWindowUpdated(hasNext: Boolean, hasPrevious: Boolean) = updateCurrentWindow(hasNext = hasNext, hasPrevious = hasPrevious)
+        override fun onCurrentWindowUpdated(showNextAction: Boolean, showPreviousAction: Boolean) = updateCurrentWindow(hasNext = showNextAction, hasPrevious = showPreviousAction)
     }
 
     @Inject
@@ -53,7 +53,7 @@ class MainActivity : BaseActivity() {
 
     private fun updatePlaybackState(playWhenReady: Boolean) {
         currentlyPlaying = playWhenReady
-        val imageResource = if (playWhenReady) R.drawable.exo_controls_pause else R.drawable.exo_controls_play
+        val imageResource = if (playWhenReady) R.drawable.ic_pause_24dp else R.drawable.ic_play_24dp
         togglePlaybackButton.setImageResource(imageResource)
     }
 }

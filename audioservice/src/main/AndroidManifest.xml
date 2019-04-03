@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.zawadz88.audioservice">
+
+    <application>
+
+        <service android:name="com.github.zawadz88.audioservice.internal.AudioPlayerService" />
+    </application>
+</manifest>

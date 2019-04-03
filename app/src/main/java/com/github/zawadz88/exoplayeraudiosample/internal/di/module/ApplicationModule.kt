@@ -11,6 +11,7 @@ import com.github.zawadz88.exoplayeraudiosample.presentation.common.DaggerViewMo
 import dagger.Binds
 import dagger.Module
 
+@Suppress("unused")
 @Module
 abstract class ApplicationModule {
 

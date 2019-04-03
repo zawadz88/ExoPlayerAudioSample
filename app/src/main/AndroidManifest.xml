@@ -24,8 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service android:name="com.github.zawadz88.exoplayeraudiosample.service.AudioPlayerService" />
     </application>
 
 </manifest>

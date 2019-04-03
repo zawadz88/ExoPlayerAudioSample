@@ -1,4 +1,4 @@
-package com.github.zawadz88.exoplayeraudiosample.service
+package com.github.zawadz88.audioservice.internal
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -8,11 +8,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Binder
 import android.os.IBinder
-import com.github.zawadz88.exoplayeraudiosample.R
-import com.github.zawadz88.exoplayeraudiosample.Samples
-import com.github.zawadz88.exoplayeraudiosample.Samples.SAMPLES
-import com.github.zawadz88.exoplayeraudiosample.extension.printIntentExtras
-import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
+import androidx.core.app.ComponentActivity
+import com.github.zawadz88.audioservice.R
+import com.github.zawadz88.audioservice.internal.Samples.SAMPLES
+import com.github.zawadz88.audioservice.internal.extension.printIntentExtras
+import com.github.zawadz88.audioservice.internal.exoplayer.createWithNotificationChannel
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -31,7 +31,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import timber.log.Timber
 
-class AudioPlayerService : Service() {
+internal class AudioPlayerService : Service() {
 
     companion object {
         const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
@@ -182,11 +182,13 @@ class AudioPlayerService : Service() {
         override fun getCurrentContentTitle(player: Player): String = SAMPLES[player.currentWindowIndex].title
 
         override fun createCurrentContentIntent(player: Player): PendingIntent? =
-            PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+        //PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(context, 0, Intent(context, ComponentActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
 
         override fun getCurrentContentText(player: Player): String? = SAMPLES[player.currentWindowIndex].description
 
-        override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? = Samples.getBitmap(context, SAMPLES[player.currentWindowIndex].bitmapResource)
+        override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? =
+            Samples.getBitmap(context, SAMPLES[player.currentWindowIndex].bitmapResource)
     }
 
     private fun clearPlayerNotificationManager() {
@@ -202,7 +204,7 @@ class AudioPlayerService : Service() {
     }
 
     private fun createMediaSource(): ConcatenatingMediaSource {
-        val dataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, getString(R.string.app_name)))
+        val dataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, getString(R.string.audio_player_service)))
         val concatenatingMediaSource = ConcatenatingMediaSource()
         // TODO: load data from some real-life source
         for (sample in SAMPLES) {
@@ -212,9 +214,9 @@ class AudioPlayerService : Service() {
         return concatenatingMediaSource
     }
 
-    inner class LocalBinder : Binder() {
+    internal inner class LocalBinder : Binder() {
 
-        val boundPlayer: ExoPlayer
+        internal val boundPlayer: ExoPlayer
             get() = checkNotNull(player) { "Expected player to be not null" }
     }
 }
