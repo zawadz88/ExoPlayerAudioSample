@@ -17,9 +17,9 @@
 
 package com.github.zawadz88.exoplayeraudiosample.domain.interactor.base
 
-import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptyCompletableObserver
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.PostExecutionThread
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.ThreadExecutor
+import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptyCompletableObserver
 import io.reactivex.Completable
 import io.reactivex.observers.DisposableCompletableObserver
 
@@ -57,13 +57,15 @@ abstract class CompletableUseCase<in Params>(
         addDisposable(completable.subscribeWith(observer))
     }
 
+    operator fun invoke(observer: DisposableCompletableObserver = EmptyCompletableObserver(), params: Params? = null) = execute(observer, params)
+
     /**
      * Builds a [Completable] which will be used when executing the current [CompletableUseCase].
      * With provided Schedulers
      */
     private fun buildUseCaseCompletableWithSchedulers(params: Params?): Completable {
         return buildUseCaseCompletable(params)
-                .subscribeOn(threadExecutorScheduler)
-                .observeOn(postExecutionThreadScheduler)
+            .subscribeOn(threadExecutorScheduler)
+            .observeOn(postExecutionThreadScheduler)
     }
 }

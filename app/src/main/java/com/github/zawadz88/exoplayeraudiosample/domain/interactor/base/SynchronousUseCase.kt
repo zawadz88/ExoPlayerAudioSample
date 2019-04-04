@@ -32,4 +32,6 @@ interface SynchronousUseCase<out Results, in Params> {
      * If this should not return anything then use [Unit] as [Results].
      */
     fun execute(params: Params? = null): Results
+
+    operator fun invoke(params: Params? = null): Results = execute(params)
 }

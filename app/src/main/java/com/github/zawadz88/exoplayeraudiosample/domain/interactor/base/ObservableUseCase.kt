@@ -21,9 +21,9 @@
 
 package com.github.zawadz88.exoplayeraudiosample.domain.interactor.base
 
-import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptyObserver
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.PostExecutionThread
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.ThreadExecutor
+import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptyObserver
 import io.reactivex.Observable
 import io.reactivex.observers.DisposableObserver
 
@@ -61,13 +61,15 @@ abstract class ObservableUseCase<Results, in Params>(
         addDisposable(observable.subscribeWith(observer))
     }
 
+    operator fun invoke(observer: DisposableObserver<Results> = EmptyObserver(), params: Params? = null) = execute(observer, params)
+
     /**
      * Builds an [Observable] which will be used when executing the current [ObservableUseCase].
      * With provided Schedulers
      */
     private fun buildUseCaseObservableWithSchedulers(params: Params?): Observable<Results> {
         return buildUseCaseObservable(params)
-                .subscribeOn(threadExecutorScheduler)
-                .observeOn(postExecutionThreadScheduler)
+            .subscribeOn(threadExecutorScheduler)
+            .observeOn(postExecutionThreadScheduler)
     }
 }

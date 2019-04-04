@@ -18,4 +18,5 @@ This is a sample project where I experimented with [ExoPlayer](https://github.co
 <img src ="./art/audioplayer.gif" />
 
 ## TODOs
+- add a :core module and a feature module
 - Loading music list from an external source e.g. a Web Service via Kotlin coroutines

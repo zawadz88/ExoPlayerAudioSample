@@ -17,9 +17,9 @@
 
 package com.github.zawadz88.exoplayeraudiosample.domain.interactor.base
 
-import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptySingleObserver
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.PostExecutionThread
 import com.github.zawadz88.exoplayeraudiosample.domain.executor.ThreadExecutor
+import com.github.zawadz88.exoplayeraudiosample.internal.rx.EmptySingleObserver
 import io.reactivex.Single
 import io.reactivex.observers.DisposableSingleObserver
 
@@ -55,13 +55,15 @@ abstract class SingleUseCase<Results, in Params>(
         addDisposable(single.subscribeWith(observer))
     }
 
+    operator fun invoke(observer: DisposableSingleObserver<Results> = EmptySingleObserver(), params: Params? = null) = execute(observer, params)
+
     /**
      * Builds a [Single] which will be used when executing the current [SingleUseCase].
      * With provided Schedulers
      */
     private fun buildUseCaseSingleWithSchedulers(params: Params?): Single<Results> {
         return buildUseCaseSingle(params)
-                .subscribeOn(threadExecutorScheduler)
-                .observeOn(postExecutionThreadScheduler)
+            .subscribeOn(threadExecutorScheduler)
+            .observeOn(postExecutionThreadScheduler)
     }
 }
