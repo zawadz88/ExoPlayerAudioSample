@@ -79,13 +79,13 @@ dependencies {
     testImplementation "org.mockito:mockito-junit-jupiter:2.23.0"
 
     androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestUtil 'androidx.test:orchestrator:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     androidTestImplementation "org.junit.jupiter:junit-jupiter-api:5.4.2"
     androidTestImplementation "de.mannodermaus.junit5:android-test-core:1.0.0"
     androidTestRuntimeOnly "de.mannodermaus.junit5:android-test-runner:1.0.0"
-    // comment line below if running JUnit5 tests in Android Studio, this cause them to fail with java.lang.NoClassDefFoundError: org/junit/platform/launcher/TestExecutionListener
-    androidTestImplementation "org.junit.platform:junit-platform-runner:1.4.2"
+
+    androidTestUtil 'androidx.test:orchestrator:1.1.1'
+    androidTestImplementation "org.junit.platform:junit-platform-suite-api:1.4.2" // required to run with Orchestrator
 }
