@@ -4,15 +4,15 @@ import android.app.Application
 import androidx.core.app.ComponentActivity
 import com.github.zawadz88.audioservice.AudioPlayerServiceManager
 import com.github.zawadz88.audioservice.AudioPlayerStateListener
+import com.github.zawadz88.audioservice.internal.AudioPlayerServiceManagerImpl
 import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceConnectionFactory
 import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceIntentFactory
-import com.github.zawadz88.audioservice.internal.AudioPlayerServiceManagerImpl
 import dagger.Module
 import dagger.Provides
 
 @Suppress("unused")
 @Module
-object AudioPlayerModule {
+object AudioPlayerActivityModule {
 
     @Provides
     @JvmStatic

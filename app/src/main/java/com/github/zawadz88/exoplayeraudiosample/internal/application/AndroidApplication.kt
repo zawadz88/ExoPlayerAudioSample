@@ -12,8 +12,9 @@ class AndroidApplication : DaggerApplication() {
         super.onCreate()
         initLogging()
     }
+
     override fun applicationInjector(): AndroidInjector<out AndroidApplication> =
-            DaggerApplicationComponent.builder().create(this)
+        DaggerApplicationComponent.builder().create(this)
 
     private fun initLogging() {
         Timber.uprootAll()

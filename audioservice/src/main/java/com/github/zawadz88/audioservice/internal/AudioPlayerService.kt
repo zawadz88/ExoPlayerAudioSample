@@ -8,11 +8,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Binder
 import android.os.IBinder
-import androidx.core.app.ComponentActivity
+import com.github.zawadz88.audioservice.CurrentContentIntentProvider
 import com.github.zawadz88.audioservice.R
 import com.github.zawadz88.audioservice.internal.Samples.SAMPLES
-import com.github.zawadz88.audioservice.internal.extension.printIntentExtras
 import com.github.zawadz88.audioservice.internal.exoplayer.createWithNotificationChannel
+import com.github.zawadz88.audioservice.internal.extension.printIntentExtras
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -29,9 +29,11 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescripti
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.NotificationListener
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import dagger.android.DaggerService
 import timber.log.Timber
+import javax.inject.Inject
 
-internal class AudioPlayerService : Service() {
+internal class AudioPlayerService : DaggerService() {
 
     companion object {
         const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"
@@ -41,6 +43,9 @@ internal class AudioPlayerService : Service() {
         private const val PLAYBACK_CHANNEL_ID = "playback_channel_id"
         private const val PLAYBACK_NOTIFICATION_ID = 6789
     }
+
+    @Inject
+    internal lateinit var currentContentIntentProvider: CurrentContentIntentProvider
 
     private var player: SimpleExoPlayer? = null
 
@@ -181,9 +186,10 @@ internal class AudioPlayerService : Service() {
     private fun createMediaDescriptionAdapter(context: Context): MediaDescriptionAdapter = object : MediaDescriptionAdapter {
         override fun getCurrentContentTitle(player: Player): String = SAMPLES[player.currentWindowIndex].title
 
-        override fun createCurrentContentIntent(player: Player): PendingIntent? =
-        //PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
-            PendingIntent.getActivity(context, 0, Intent(context, ComponentActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+        override fun createCurrentContentIntent(player: Player): PendingIntent? {
+            val provideCurrentContentIntent = currentContentIntentProvider.provideCurrentContentIntent(context)
+            return PendingIntent.getActivity(context, 0, provideCurrentContentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
 
         override fun getCurrentContentText(player: Player): String? = SAMPLES[player.currentWindowIndex].description
 
