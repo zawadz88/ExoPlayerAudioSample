@@ -7,14 +7,14 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.util.NotificationUtil
 
 internal class PlayerNotificationManagerWithHiddenStopAction(
-    context: Context?,
-    channelId: String?,
+    context: Context,
+    channelId: String,
     notificationId: Int,
-    mediaDescriptionAdapter: MediaDescriptionAdapter?,
+    mediaDescriptionAdapter: MediaDescriptionAdapter,
     customActionReceiver: CustomActionReceiver? = null
 ) : PlayerNotificationManager(context, channelId, notificationId, mediaDescriptionAdapter, customActionReceiver) {
 
-    override fun getActions(player: Player?): MutableList<String> =
+    override fun getActions(player: Player): MutableList<String> =
         super.getActions(player).filter { it != PlayerNotificationManager.ACTION_STOP }.toMutableList()
 }
 

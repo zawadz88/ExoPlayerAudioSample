@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+apply plugin: 'dagger.hilt.android.plugin'
+
 apply plugin: "de.mannodermaus.android-junit5"
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -50,6 +52,15 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes true
+    javacOptions {
+        // https://github.com/google/dagger/issues/2684
+        // https://dagger.dev/hilt/compiler-options#disable-install-in-check
+        option("-Adagger.hilt.disableModulesHaveInstallInCheck=true")
+    }
+}
+
 dependencies {
     implementation project(':audioservice')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -58,13 +69,15 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.3.0'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.google.dagger:dagger:2.38.1'
     implementation('com.google.dagger:dagger-android-support:2.38.1')
     kapt 'com.google.dagger:dagger-compiler:2.38.1'
     kapt 'com.google.dagger:dagger-android-processor:2.38.1'
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     implementation 'io.reactivex.rxjava2:rxjava:2.1.13'
     implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
