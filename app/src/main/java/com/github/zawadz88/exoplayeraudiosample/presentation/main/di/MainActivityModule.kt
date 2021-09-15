@@ -1,25 +1,22 @@
 package com.github.zawadz88.exoplayeraudiosample.presentation.main.di
 
-import androidx.core.app.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import com.github.zawadz88.audioservice.AudioPlayerStateListener
 import com.github.zawadz88.audioservice.di.AudioPlayerActivityModule
 import com.github.zawadz88.exoplayeraudiosample.presentation.main.view.MainActivity
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 
 @Suppress("unused")
+@InstallIn(ActivityComponent::class)
 @Module(includes = [AudioPlayerActivityModule::class])
-abstract class MainActivityModule {
+object MainActivityModule {
 
-    @Binds
-    abstract fun bindComponentActivity(activity: MainActivity): ComponentActivity
+    @Provides
+    fun FragmentActivity.provideMainActivity(): MainActivity = this as MainActivity
 
-    @Module
-    companion object {
-
-        @Provides
-        @JvmStatic
-        fun provideAudioPlayerStateListener(activity: MainActivity): AudioPlayerStateListener = activity.audioPlayerStateListener
-    }
+    @Provides
+    fun provideAudioPlayerStateListener(activity: MainActivity): AudioPlayerStateListener = activity.audioPlayerStateListener
 }

@@ -8,12 +8,12 @@ import com.github.zawadz88.audioservice.AudioPlayerStateListener
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.internal.activity.BaseActivity
 import com.github.zawadz88.exoplayeraudiosample.presentation.main.viewmodel.MainViewModel
-import kotlinx.android.synthetic.main.activity_main.nextButton
-import kotlinx.android.synthetic.main.activity_main.previousButton
-import kotlinx.android.synthetic.main.activity_main.togglePlaybackButton
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 @Suppress("ProtectedInFinal")
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     internal val audioPlayerStateListener = object : AudioPlayerStateListener {

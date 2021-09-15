@@ -29,11 +29,12 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescripti
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.NotificationListener
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import dagger.android.DaggerService
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
-internal class AudioPlayerService : DaggerService() {
+@AndroidEntryPoint
+internal class AudioPlayerService : Service() {
 
     companion object {
         const val INTENT_KEY_SHOULD_PLAY = "shouldPlay"

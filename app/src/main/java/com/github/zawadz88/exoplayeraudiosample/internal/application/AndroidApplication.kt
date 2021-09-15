@@ -1,20 +1,17 @@
 package com.github.zawadz88.exoplayeraudiosample.internal.application
 
+import android.app.Application
 import com.github.zawadz88.exoplayeraudiosample.BuildConfig
-import com.github.zawadz88.exoplayeraudiosample.internal.di.component.DaggerApplicationComponent
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
-class AndroidApplication : DaggerApplication() {
+@HiltAndroidApp
+class AndroidApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         initLogging()
     }
-
-    override fun applicationInjector(): AndroidInjector<out AndroidApplication> =
-        DaggerApplicationComponent.builder().create(this)
 
     private fun initLogging() {
         Timber.uprootAll()
