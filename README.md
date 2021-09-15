@@ -4,7 +4,7 @@ This is a sample project where I experimented with [ExoPlayer](https://github.co
 
 ## Libraries/architecture used
 - ExoPlayer 2
-- Dagger 2
+- Hilt
 - Android Architecture Components
 - JUnit5
 
