@@ -1,7 +1,7 @@
 package com.github.zawadz88.audioservice.internal
 
 import android.content.Context
-import androidx.core.app.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -13,7 +13,7 @@ import com.google.android.exoplayer2.util.Util
 import timber.log.Timber
 
 internal class AudioPlayerServiceManagerImpl(
-    private val activity: ComponentActivity,
+    private val activity: FragmentActivity,
     private val audioPlayerServiceConnectionFactory: AudioPlayerServiceConnectionFactory,
     private val audioPlayerServiceIntentFactory: AudioPlayerServiceIntentFactory,
     stateListener: AudioPlayerStateListener

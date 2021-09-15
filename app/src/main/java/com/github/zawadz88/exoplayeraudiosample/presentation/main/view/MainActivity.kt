@@ -35,7 +35,7 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         initializeViews()
-        viewModel = ViewModelProvider(this, viewModelFactory).get<MainViewModel>().apply {
+        viewModel = ViewModelProvider(this).get<MainViewModel>().apply {
             loadContent()
         }
     }
