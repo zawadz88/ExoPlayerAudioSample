@@ -10,11 +10,9 @@ import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceInten
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 
-@Suppress("unused")
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(AudioPlayerActivityComponent::class)
 object AudioPlayerActivityModule {
 
     @Provides
@@ -34,3 +32,4 @@ object AudioPlayerActivityModule {
     internal fun provideAudioPlayerServiceIntentFactory(application: Application): AudioPlayerServiceIntentFactory =
         AudioPlayerServiceIntentFactory(application)
 }
+
