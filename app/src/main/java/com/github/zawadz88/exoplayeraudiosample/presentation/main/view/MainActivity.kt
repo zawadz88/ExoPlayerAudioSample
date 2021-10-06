@@ -5,31 +5,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import com.github.zawadz88.audioservice.AudioPlayerServiceManager
 import com.github.zawadz88.audioservice.AudioPlayerStateListener
-import com.github.zawadz88.audioservice.di.AudioPlayerActivityComponent
+import com.github.zawadz88.audioservice.di.AudioPlayerServiceManagerProvider
 import com.github.zawadz88.exoplayeraudiosample.R
 import com.github.zawadz88.exoplayeraudiosample.internal.activity.BaseActivity
 import com.github.zawadz88.exoplayeraudiosample.presentation.main.viewmodel.MainViewModel
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
-import javax.inject.Provider
 
 @Suppress("ProtectedInFinal")
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    @InstallIn(AudioPlayerActivityComponent::class)
-    @EntryPoint
-    interface MainActivityEntryPoint {
-
-        fun audioPlayerServiceManager(): AudioPlayerServiceManager
-    }
-
     @Inject
-    protected lateinit var componentBuilderProvider: Provider<AudioPlayerActivityComponent.Builder>
+    protected lateinit var audioPlayerServiceManagerProvider: AudioPlayerServiceManagerProvider
 
     private val audioPlayerStateListener = object : AudioPlayerStateListener {
 
@@ -43,12 +32,7 @@ class MainActivity : BaseActivity() {
         )
     }
 
-    private val audioManager: AudioPlayerServiceManager by lazy {
-        EntryPoints.get(
-            componentBuilderProvider.get().stateListener(audioPlayerStateListener).build(),
-            MainActivityEntryPoint::class.java
-        ).audioPlayerServiceManager()
-    }
+    private lateinit var audioManager: AudioPlayerServiceManager
 
     private lateinit var viewModel: MainViewModel
 
@@ -57,7 +41,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        audioManager = audioPlayerServiceManagerProvider.create(audioPlayerStateListener)
         initializeViews()
         viewModel = ViewModelProvider(this).get<MainViewModel>().apply {
             loadContent()

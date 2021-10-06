@@ -10,13 +10,15 @@ import com.github.zawadz88.audioservice.AudioPlayerStateListener
 import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceConnectionFactory
 import com.github.zawadz88.audioservice.internal.factory.AudioPlayerServiceIntentFactory
 import com.google.android.exoplayer2.util.Util
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import timber.log.Timber
 
-internal class AudioPlayerServiceManagerImpl(
+internal class AudioPlayerServiceManagerImpl @AssistedInject constructor(
     private val activity: FragmentActivity,
     private val audioPlayerServiceConnectionFactory: AudioPlayerServiceConnectionFactory,
     private val audioPlayerServiceIntentFactory: AudioPlayerServiceIntentFactory,
-    stateListener: AudioPlayerStateListener
+    @Assisted stateListener: AudioPlayerStateListener
 ) : AudioPlayerServiceManager {
 
     init {
